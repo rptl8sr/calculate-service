@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"calculate-service/internal/config"
+	"calculate-service/internal/controller"
 	"calculate-service/internal/logger"
+	"calculate-service/internal/router"
 )
 
 type app struct {
@@ -38,8 +40,12 @@ func MustLoad() (App, error) {
 		)
 	}
 
+	ctrl := controller.New()
+	r := router.New(ctrl, cfg.App.APIVersion)
+
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%d", cfg.App.Port),
+		Handler: r,
+		Addr:    fmt.Sprintf(":%d", cfg.App.Port),
 	}
 
 	return &app{server: srv}, nil
