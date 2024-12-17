@@ -1,15 +1,22 @@
 package app
 
 import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"time"
+
 	"calculate-service/internal/config"
 	"calculate-service/internal/logger"
 )
 
 type app struct {
+	server *http.Server
 }
 
 type App interface {
-	Run() error
+	Run(ctx context.Context) error
 }
 
 func MustLoad() (App, error) {
@@ -31,9 +38,37 @@ func MustLoad() (App, error) {
 		)
 	}
 
-	return &app{}, nil
+	srv := &http.Server{
+		Addr: fmt.Sprintf(":%d", cfg.App.Port),
+	}
+
+	return &app{server: srv}, nil
 }
 
-func (a *app) Run() error {
-	return nil
+func (a *app) Run(ctx context.Context) error {
+	go func() {
+		<-ctx.Done()
+
+		logger.Info("Shutting down server by context...")
+		ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+
+		err := a.server.Shutdown(ctxWithTimeout)
+		if err != nil {
+			logger.Error("Error shutting down server", "error", err)
+			return
+		}
+	}()
+
+	logger.Info("Server started", "address", a.server.Addr)
+	err := a.server.ListenAndServe()
+
+	switch {
+	case errors.Is(err, http.ErrServerClosed), errors.Is(err, context.Canceled):
+		logger.Info("Server shutting down gracefully")
+		return nil
+	default:
+		logger.Error("Server error", "error", err)
+		return err
+	}
 }
