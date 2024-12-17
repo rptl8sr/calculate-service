@@ -22,9 +22,15 @@ func MustLoad() (App, error) {
 
 	if cfg.App.Mode == config.Development {
 		logger.Debug("Dev mode", "config", cfg)
+	} else {
+		logger.Info("App initialized",
+			"mode", cfg.App.Mode,
+			"logLevel", cfg.App.LogLevel,
+			"version", cfg.App.Version,
+			"port", cfg.App.Port,
+		)
 	}
 
-	logger.Info("App initialized", "mode", cfg.App.Mode, "logLevel", cfg.App.LogLevel)
 	return &app{}, nil
 }
 
