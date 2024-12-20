@@ -6,12 +6,8 @@ import (
 
 type controller struct{}
 
-func (c *controller) Calculate(context context.Context) error {
-	return nil
-}
-
 type Controller interface {
-	Calculate(context context.Context) error
+	Calculate(ctx context.Context, expression string) (float64, error)
 }
 
 func New() Controller {
