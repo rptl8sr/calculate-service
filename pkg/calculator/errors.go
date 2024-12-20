@@ -14,6 +14,7 @@ const (
 	ErrTooManyValues
 	ErrTooLargeNumber
 	ErrMismatchOperator
+	ErrUnknown
 )
 
 type CalcError struct {
@@ -25,8 +26,16 @@ func (e CalcError) Error() string {
 	return e.Message
 }
 
+func NewErrUnknown() error {
+	return NewCalcError(ErrUnknown, "")
+}
+
 func NewCalcError(errType ErrorType, details string) error {
 	var message string
+
+	err := CalcError{
+		Type: errType,
+	}
 
 	switch errType {
 	case ErrInvalidCharacter:
@@ -44,8 +53,11 @@ func NewCalcError(errType ErrorType, details string) error {
 	case ErrMismatchOperator:
 		message = fmt.Sprintf("mismatched operator: %s", details)
 	default:
+		err.Type = ErrUnknown
 		message = "unknown error"
 	}
 
-	return CalcError{Type: errType, Message: message}
+	err.Message = message
+
+	return err
 }
