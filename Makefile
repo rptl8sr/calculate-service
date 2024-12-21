@@ -22,7 +22,7 @@ init: go-init git-init blueprint-init
 .PHONY: blueprint-init
 blueprint-init:
 	touch README.md
-	tocuh Dockerfile
+	touch Dockerfile
 	touch Docker-compose.yaml
 	mkdir -p bin
 	mkdir -p cmd/server && echo 'package main' >> cmd/server/main.go
@@ -40,7 +40,7 @@ blueprint-init:
 # Go
 .PHONY: go-init
 go-init:
-	go mod init github.com/$(USER)/$(REPO_NAME)
+	go mod init $(REPO_NAME)
 
 # GIT
 .PHONY: git-init
@@ -61,43 +61,24 @@ BN ?= dev
 git-checkout:
 	git checkout -b $(BN)
 
-
-# PROJECT STRUCTURE
-
-
 # LINT
+.PHONY: golangci-lint-install
+lint-install:
+	GOBIN=$(LOCAL_BIN) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.62.2
+
 .PHONY: lint
 lint:
 	$(LOCAL_BIN)/golangci-lint run ./...
 
+# App
+.PHONY: mod
+mod:
+	go mod download
 
-# GOOSE
-DSN="host=$(PG_HOST) port=$(PG_PORT) dbname=$(PG_DATABASE) user=$(PG_USER) password=$(PG_PASSWORD) sslmode=disable"
+.PHONY: build
+build:
+	go build -o calculate-app ./cmd/server/main.go
 
-.PHONY: goose-get
-get-goose:
-	GOBIN=$(LOCAL_BIN) go install github.com/pressly/goose/v3/cmd/goose@v3.21.1
-
-
-.PHONY: goose-make-migrations
-goose-make-migrations:
-ifndef MN
-	$(error MN is undefined)
-endif
-	$(LOCAL_BIN)/goose -dir=$(MIGRATIONS_DIR) create '$(MN)' sql
-
-
-.PHONY: goose-migrate-status
-goose-migrate-status:
-	$(LOCAL_BIN)/goose -dir $(MIGRATIONS_DIR) postgres $(DSN) status -v
-
-
-.PHONY: goose-migrate-up
-goose-migrate-up:
-	$(LOCAL_BIN)/goose -dir $(MIGRATIONS_DIR) postgres $(DSN) up -v
-
-
-.PHONY: goose-migrate-down
-goose-migrate-down:
-	$(LOCAL_BIN)/goose -dir $(MIGRATIONS_DIR) postgres $(DSN) down -v
-
+.PHONY: run
+run:
+	go run ./cmd/server/main.go
