@@ -39,7 +39,7 @@ But you can make `.env` file in root project's folder to change it.
 
 **Request**
 
-Make POST request to endpoint with the next payload (content-type: application/json):
+Make a POST request to endpoint with the next payload (content-type: application/json):
 
 `{"expression": "arithmetic expression"}`
 
@@ -130,6 +130,7 @@ Content-Type: text/plain; charset=utf-8`
 
 Body:
 `{"error":"request error: invalid character: position 2: n"}`
+---
 
 ---
 
