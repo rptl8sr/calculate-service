@@ -7,12 +7,14 @@ Service to parse and calculate simple arithmetic expressions.
 - curl, Postman, or any similar app to work with HTTP API   
 
 ## Installation
-1. Clone the repository to your machine `git clone`
+1. Clone the repository to your machine `git clone github.com/rptl8sr/calculate-service`
 2. Navigate into the project's directory `cd calculate-service`
 3. Download all dependencies `go mod download`
 4. [MacOS | LINUX] Run app `go run ./cmd/server/main.go`
    
-    [Windows] Run app `go run .\cmd\server\main.go`
+   [Windows] Run app `go run .\cmd\server\main.go`
+   
+   Also, see the makefile for additional commands.
 5. Make http requests
  
 ## How to use
@@ -55,35 +57,46 @@ The result will be an HTTP response with the body (content-type: application/jso
 
 
 ## Examples 
-**Right requests**
-___
+
+
+---
+**Good requests #1**
+
 Request
 `curl -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"expression": "2+2"}'`
 
 Response:
 `{"result":"4.000000"}`
----
+
+**Good requests #2**
+
 Request
 `curl -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"expression": "-2+2--(3+1)"}'`
 
 Body:
 `{"result":"4.000000"}`
----
+
+**Good requests #3**
+
 Request
 `curl -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"expression": "-(2+3)--(3+1)"}'`
 
 Body:
 `{"result":"-1.000000"}`
----
+
+**Good requests #4**
+
 Request
 `curl -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"expression": "-(3+1.1342526788908909457457476)*-6.72342534637"}'`
 
 Body:
 `{"result":"27.796339"}`
+
 ---
 
-**Bad requests**
 ---
+**Bad requests #1**
+
 Request
 `curl -i -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"other_field": ""}'`
 
@@ -93,7 +106,9 @@ Content-Type: application/json`
 
 Body:
 `{"error":"'expression' field is required."}`
----
+
+**Bad requests #2**
+
 Request
 `curl -i -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"expression": "(1+2))*3"}'`
 
@@ -103,7 +118,9 @@ Content-Type: text/plain; charset=utf-8`
 
 Body:
 `"error":"request error: mismatched parentheses: position 5: )"}`
----
+
+**Bad requests #3**
+
 Request
 `curl -i -X POST 'localhost:8080/api/v1/calculate' -H 'Content-Type: application/json' -d '{"expression": "1+not_a_number"}'`
 
@@ -113,6 +130,8 @@ Content-Type: text/plain; charset=utf-8`
 
 Body:
 `{"error":"request error: invalid character: position 2: n"}`
+
+---
 
 ## License
 1. This project is licensed under the terms of the MIT license. This means that you are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software without restriction, subject to the following conditions:
