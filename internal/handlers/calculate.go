@@ -17,39 +17,64 @@ type CalculateResponse struct {
 	Result string `json:"result"`
 }
 
-func (h handler) Calculate(w http.ResponseWriter, r *http.Request) {
-	expression := CalculatePayload{}
+type ResponseError struct {
+	Error string `json:"error"`
+}
 
-	err := json.NewDecoder(r.Body).Decode(&expression)
+func (h handler) Calculate(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	payload := CalculatePayload{}
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		responseError := ResponseError{Error: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(responseError)
+		return
+	}
+	defer r.Body.Close()
+
+	if payload.Expression == "" {
+		responseError := ResponseError{Error: "'expression' field is required."}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(responseError)
 		return
 	}
 
-	res, err := h.controller.Calculate(r.Context(), expression.Expression)
+	res, err := h.controller.Calculate(r.Context(), payload.Expression)
+
 	if err != nil {
 		var ctrlErr controller.CtrlError
 		if errors.As(err, &ctrlErr) {
+
 			switch ctrlErr.Type {
 			case controller.ErrRequest:
-				http.Error(w, ctrlErr.Error(), http.StatusUnprocessableEntity)
+				responseError := ResponseError{Error: ctrlErr.Error()}
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				json.NewEncoder(w).Encode(responseError)
+				return
 			case controller.ErrServer:
-				http.Error(w, ctrlErr.Error(), http.StatusInternalServerError)
+				responseError := ResponseError{Error: http.StatusText(http.StatusInternalServerError)}
+				w.WriteHeader(http.StatusInternalServerError)
+				json.NewEncoder(w).Encode(responseError)
+				return
 			}
 		}
 
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	response := CalculateResponse{
 		Result: fmt.Sprintf("%f", res),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 }
