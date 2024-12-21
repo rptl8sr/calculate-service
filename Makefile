@@ -70,4 +70,15 @@ lint-install:
 lint:
 	$(LOCAL_BIN)/golangci-lint run ./...
 
+# App
+.PHONY: mod
+mod:
+	go mod download
 
+.PHONY: build
+build:
+	go build -o calculate-app ./cmd/server/main.go
+
+.PHONY: run
+run:
+	go run ./cmd/server/main.go
