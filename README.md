@@ -58,8 +58,6 @@ The result will be an HTTP response with the body (content-type: application/jso
 
 ## Examples 
 
-
----
 **Good requests #1**
 
 Request
@@ -94,7 +92,6 @@ Body:
 
 ---
 
----
 **Bad requests #1**
 
 Request
