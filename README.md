@@ -130,9 +130,6 @@ Content-Type: text/plain; charset=utf-8`
 
 Body:
 `{"error":"request error: invalid character: position 2: n"}`
----
-
----
 
 ## License
 1. This project is licensed under the terms of the MIT license. This means that you are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software without restriction, subject to the following conditions:
