@@ -7,9 +7,9 @@ Service to parse and calculate simple arithmetic expressions.
 - curl, Postman, or any similar app to work with HTTP API   
 
 ## Installation
-1. Clone the repository to your machine `git clone github.com/rptl8sr/calculate-service`
+1. Clone the repository to your machine `git clone github.com/rptl8sr/calculate-service.git`
 2. Navigate into the project's directory `cd calculate-service`
-3. Download all dependencies `go mod download`
+3. Download all dependencies `go mod tidy`
 4. [MacOS | LINUX] Run app `go run ./cmd/server/main.go`
    
    [Windows] Run app `go run .\cmd\server\main.go`
