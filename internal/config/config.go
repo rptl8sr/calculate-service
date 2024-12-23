@@ -21,12 +21,12 @@ type Config struct {
 }
 
 type App struct {
-	Port       int        `env:"PORT" envDefault:"8080"`
-	APIVersion string     `env:"API_VERSION" envDefault:"v1"`
-	Version    string     `env:"APP_VERSION" envDefault:"v1.0.0"`
-	Name       string     `env:"APP_NAME" envDefault:"Calculate"`
-	Mode       Mode       `env:"APP_MODE" envDefault:"production"`
-	LogLevel   slog.Level `env:"LOG_LEVEL" envDefault:"info"`
+	Port       int        `env:"PORT" env-default:"8080"`
+	APIVersion string     `env:"API_VERSION" env-default:"v1"`
+	Version    string     `env:"APP_VERSION" env-default:"v1.0.0"`
+	Name       string     `env:"APP_NAME" env-default:"Calculate"`
+	Mode       Mode       `env:"APP_MODE" env-default:"production"`
+	LogLevel   slog.Level `env:"LOG_LEVEL" env-default:"info"`
 }
 
 func MustLoad() (*Config, error) {
