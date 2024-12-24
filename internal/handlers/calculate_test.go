@@ -44,7 +44,7 @@ func TestCalculate(t *testing.T) {
 			expression:     "",
 			expectedResult: "",
 			errorExpected:  true,
-			expectedCode:   http.StatusUnprocessableEntity,
+			expectedCode:   http.StatusBadRequest,
 		},
 	}
 
